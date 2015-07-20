@@ -891,12 +891,6 @@ Qed.
     subsidiary lemma or two. Alternatively, remember that you do
     not have to introduce all hypotheses at the same time.) *)
 
-Theorem andb_eq_orb' :
-  forall (b : bool),
-  forall (c : bool), andb b c = andb b c ->
-  b = c.
-Proof.
-
 Theorem andb_eq_orb : 
   forall (b c : bool),
   (andb b c = orb b c) ->
@@ -944,8 +938,43 @@ Qed.
         then incrementing. 
 *)
 
-(* FILL IN HERE *)
-(** [] *)
+Inductive bin : Type :=
+  | BO   : bin
+  | BT   : bin -> bin
+  | BTp1 : bin -> bin.
+
+Fixpoint incr (bn : bin) : bin :=
+  match bn with
+  | BO       => BTp1 BO
+  | BT   bn' => BTp1 bn'
+  | BTp1 bn' => BT (incr bn')
+  end.
+
+Fixpoint bin_to_nat (bn : bin) : nat :=
+  match bn with
+  | BO       => 0
+  | BT   bn' => 2 * (bin_to_nat bn')
+  | BTp1 bn' => 2 * (bin_to_nat bn') + 1
+  end.
+
+Example test_bin_incr1 : bin_to_nat(BO) = 0.
+Proof. reflexivity. Qed.
+Example test_bin_incr2 : bin_to_nat(incr BO) = 1.
+Proof. reflexivity. Qed.
+Example test_bin_incr3 : bin_to_nat(incr(incr BO)) = 2.
+Proof. reflexivity. Qed.
+Example test_bin_incr4 : bin_to_nat(incr(incr(incr BO))) = 3.
+Proof. reflexivity. Qed.
+Example test_bin_incr5 : bin_to_nat(incr(incr(incr(incr BO)))) = 4.
+Proof. reflexivity. Qed.
+
+Lemma test_bin_incr6 : forall (bn : bin),
+  bin_to_nat (incr bn) = S (bin_to_nat bn).
+Proof.
+  intros bn.
+  destruct bn as [|bn'|bn''].
+  - simpl. reflexivity.
+  - Abort. (* TODO *)
 
 (* ###################################################################### *)
 (** * More on Notation (Advanced) *)
