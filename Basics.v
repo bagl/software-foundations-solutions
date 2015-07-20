@@ -729,7 +729,11 @@ Proof.
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m o.
+  intros H1 H2.
+  rewrite -> H1.
+  rewrite <- H2.
+  reflexivity. Qed.
 (** [] *)
 
 (** As we've seen in earlier examples, the [Admitted] command
@@ -759,7 +763,10 @@ Theorem mult_S_1 : forall n m : nat,
   m = S n -> 
   m * (1 + n) = m * m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m.
+  intros H.
+  rewrite -> H.
+  reflexivity. Qed.
 (** [] *)
 
 
@@ -844,7 +851,9 @@ Proof.
 Theorem zero_nbeq_plus_1 : forall n : nat,
   beq_nat 0 (n + 1) = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. destruct n as [|n'].
+  reflexivity.
+  reflexivity. Qed.
 
 (** [] *)
 
@@ -860,27 +869,44 @@ Theorem identity_fn_applied_twice :
   (forall (x : bool), f x = x) ->
   forall (b : bool), f (f b) = b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros f H b.
+  rewrite -> H. rewrite -> H. reflexivity.
+Qed.
 
 (** Now state and prove a theorem [negation_fn_applied_twice] similar
     to the previous one but where the second hypothesis says that the
     function [f] has the property that [f x = negb x].*)
 
-(* FILL IN HERE *)
-(** [] *)
+Theorem negation_fn_applied_twice :
+  forall (f : bool -> bool),
+  (forall (x : bool), f x = negb x) ->
+    forall (b : bool), f (f b) = b.
+Proof.
+  intros f H b.
+  rewrite -> H. rewrite -> H. rewrite negb_involutive. reflexivity.
+Qed.
 
 (** **** Exercise: 2 stars (andb_eq_orb)  *)
 (** Prove the following theorem.  (You may want to first prove a
     subsidiary lemma or two. Alternatively, remember that you do
     not have to introduce all hypotheses at the same time.) *)
 
+Theorem andb_eq_orb' :
+  forall (b : bool),
+  forall (c : bool), andb b c = andb b c ->
+  b = c.
+Proof.
+
 Theorem andb_eq_orb : 
   forall (b c : bool),
   (andb b c = orb b c) ->
   b = c.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros b c.
+  destruct b.
+    - simpl. intros H. rewrite H. reflexivity.
+    - simpl. intros H. rewrite H. reflexivity.
+Qed.
 
 (** **** Exercise: 3 stars (binary)  *)
 (** Consider a different, more efficient representation of natural
