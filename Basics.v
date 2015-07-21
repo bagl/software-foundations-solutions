@@ -1042,8 +1042,13 @@ Fixpoint plus' (n : nat) (m : nat) : nat :=
     _does_ terminate on all inputs, but that Coq will reject because
     of this restriction. *)
 
-(* FILL IN HERE *)
-(** [] *)
+(**
+Fixpoint badDefinition (n m : nat) : nat :=
+  match n with
+  | O => O
+  | S n' => badDefinition m n'
+  end.
+**)
 
 (** $Date: 2014-12-31 15:31:47 -0500 (Wed, 31 Dec 2014) $ *)
 
