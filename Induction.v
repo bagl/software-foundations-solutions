@@ -557,9 +557,65 @@ Qed.
     wanting to change your original definitions to make the property
     easier to prove, feel free to do so.) *)
 
-(* FILL IN HERE *)
-(** [] *)
+Inductive bin : Type :=
+  | BO   : bin
+  | BT   : bin -> bin
+  | BTp1 : bin -> bin.
 
+Fixpoint incr (bn : bin) : bin :=
+  match bn with
+  | BO       => BTp1 BO
+  | BT   bn' => BTp1 bn'
+  | BTp1 bn' => BT (incr bn')
+  end.
+
+Fixpoint bin_to_nat (bn : bin) : nat :=
+  match bn with
+  | BO       => 0
+  | BT   bn' => 2 * (bin_to_nat bn')
+  | BTp1 bn' => 2 * (bin_to_nat bn') + 1
+  end.
+
+(* TODO: refactor *)
+Theorem bin_to_nat_plus_1 : forall (bn : bin),
+  bin_to_nat bn + 1 = S (bin_to_nat bn).
+Proof.
+  intros. induction bn.
+  - simpl. reflexivity.
+  - simpl.
+    rewrite plus_0_r.
+    rewrite plus_n_Sm.
+    rewrite <- IHbn.
+    rewrite <- plus_assoc.
+    reflexivity.
+  - simpl.
+    rewrite plus_0_r.
+    rewrite plus_n_Sm.
+    rewrite <- plus_assoc.
+    reflexivity.
+Qed.
+
+(* TODO: is needed ? *)
+Theorem plus_Sn_m : forall (n m : nat),
+  S (n + m) = S n + m.
+Proof.
+  intros. simpl. reflexivity.
+Qed.
+
+(* TODO: refactor *)
+Theorem bin_to_nat_pres_incr : forall (bn : bin),
+  bin_to_nat (incr bn) = S (bin_to_nat bn).
+Proof.
+  intros. induction bn.
+  - simpl. reflexivity.
+  - simpl. rewrite plus_0_r. rewrite plus_n_Sm.
+    rewrite <- plus_assoc. rewrite bin_to_nat_plus_1. reflexivity.
+  - simpl. rewrite -> IHbn.
+    rewrite plus_0_r. rewrite plus_0_r.
+    rewrite <- plus_Sn_m.
+    rewrite <- bin_to_nat_plus_1.
+    rewrite plus_assoc. reflexivity.
+Qed.
 
 (** **** Exercise: 5 stars, advanced (binary_inverse)  *)
 (** This exercise is a continuation of the previous exercise about
