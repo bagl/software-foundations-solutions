@@ -107,8 +107,14 @@ Qed.
 Theorem andb_true_elim2 : forall b c : bool,
   andb b c = true -> c = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros.
+  destruct b.
+  Case "b = true". rewrite <- H. reflexivity.
+  Case "b = false".
+    destruct c.
+    SCase "c = true". reflexivity.
+    SCase "c = false". rewrite <- H. reflexivity.
+Qed.
 
 (** There are no hard and fast rules for how proofs should be
     formatted in Coq -- in particular, where lines should be broken
