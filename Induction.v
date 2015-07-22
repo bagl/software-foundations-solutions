@@ -285,7 +285,12 @@ Qed.
 (** Briefly explain the difference between the tactics
     [destruct] and [induction].  
 
-(* FILL IN HERE *)
+Destruct creates separate branches for all constructor cases
+and one has to prove the fact in each branch.
+
+Induction creates a branch with base case and another one
+together with and induction hypothesis. One needs to prove
+both but induction hypothesis can be used in the later.
 
 *)
 (** [] *)
@@ -375,20 +380,34 @@ Proof.
 Theorem plus_swap : forall n m p : nat, 
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
-
+  intros.
+  rewrite plus_comm.
+  assert (H: p + n = n + p). rewrite plus_comm. reflexivity.
+  rewrite <- H. rewrite plus_assoc. reflexivity.
+Qed.
 
 (** Now prove commutativity of multiplication.  (You will probably
     need to define and prove a separate subsidiary theorem to be used
     in the proof of this one.)  You may find that [plus_swap] comes in
     handy. *)
 
+Theorem mult_S_r : forall m n : nat,
+  m * S n = m + m * n.
+Proof.
+  intros. induction m.
+  - simpl. reflexivity.
+  - simpl. rewrite IHm. rewrite plus_swap. reflexivity.
+Qed.
+
 Theorem mult_comm : forall m n : nat,
  m * n = n * m.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
-
+  intros n m.
+  induction n as [|n'].
+  - simpl. rewrite mult_0_r. reflexivity.
+  - simpl. rewrite mult_S_r. rewrite IHn'. reflexivity.
+Qed.
+  
 (** **** Exercise: 2 stars, optional (evenb_n__oddb_Sn)  *)
 
 (** Prove the following simple fact: *)
