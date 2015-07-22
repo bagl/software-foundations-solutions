@@ -230,25 +230,37 @@ Proof.
 Theorem mult_0_r : forall n:nat,
   n * 0 = 0.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [|n'].
+  - reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
+Qed.
 
 Theorem plus_n_Sm : forall n m : nat, 
   S (n + m) = n + (S m).
-Proof. 
-  (* FILL IN HERE *) Admitted.
-
-
+Proof.
+  intros n m.
+  induction n as [|n'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
+Qed.
+  
 Theorem plus_comm : forall n m : nat,
   n + m = m + n.
 Proof.
-  (* FILL IN HERE *) Admitted.
-
+  intros n m.
+  induction n as [|n'].
+  - rewrite plus_0_r. simpl. reflexivity.
+  - simpl. rewrite IHn'. rewrite plus_n_Sm. reflexivity.
+Qed.
 
 Theorem plus_assoc : forall n m p : nat,
   n + (m + p) = (n + m) + p.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros n m p.
+  induction n as [|n'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
+Qed.
 
 (** **** Exercise: 2 stars (double_plus)  *)
 
