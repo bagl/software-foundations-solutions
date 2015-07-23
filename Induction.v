@@ -576,23 +576,12 @@ Fixpoint bin_to_nat (bn : bin) : nat :=
   | BTp1 bn' => 2 * (bin_to_nat bn') + 1
   end.
 
-(* TODO: refactor *)
-Theorem bin_to_nat_plus_1 : forall (bn : bin),
-  bin_to_nat bn + 1 = S (bin_to_nat bn).
+Theorem nat_plus_1_r : forall (n : nat),
+  n + 1 = S n.
 Proof.
-  intros. induction bn.
-  - simpl. reflexivity.
-  - simpl.
-    rewrite plus_0_r.
-    rewrite plus_n_Sm.
-    rewrite <- IHbn.
-    rewrite <- plus_assoc.
-    reflexivity.
-  - simpl.
-    rewrite plus_0_r.
-    rewrite plus_n_Sm.
-    rewrite <- plus_assoc.
-    reflexivity.
+  intros. induction n.
+  - reflexivity.
+  - simpl. rewrite IHn. reflexivity.
 Qed.
 
 (* TODO: is needed ? *)
@@ -609,12 +598,13 @@ Proof.
   intros. induction bn.
   - simpl. reflexivity.
   - simpl. rewrite plus_0_r. rewrite plus_n_Sm.
-    rewrite <- plus_assoc. rewrite bin_to_nat_plus_1. reflexivity.
-  - simpl. rewrite -> IHbn.
-    rewrite plus_0_r. rewrite plus_0_r.
-    rewrite <- plus_Sn_m.
-    rewrite <- bin_to_nat_plus_1.
-    rewrite plus_assoc. reflexivity.
+    rewrite <- plus_assoc. rewrite nat_plus_1_r. reflexivity.
+  - simpl. rewrite plus_0_r. rewrite plus_0_r.
+    rewrite nat_plus_1_r. rewrite plus_n_Sm.
+    rewrite IHbn.
+    replace (S (bin_to_nat bn + S (bin_to_nat bn))) with (S (bin_to_nat bn) + S (bin_to_nat bn)).
+    reflexivity.
+    rewrite plus_Sn_m. reflexivity.
 Qed.
 
 (** **** Exercise: 5 stars, advanced (binary_inverse)  *)
