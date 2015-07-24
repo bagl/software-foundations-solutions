@@ -633,8 +633,42 @@ Qed.
     here. 
 *)
 
-(* FILL IN HERE *)
-(** [] *)
+Fixpoint nat_to_bin (n : nat) : bin :=
+  match n with
+  | O    => BO
+  | S n' => incr (nat_to_bin n')
+  end.
+
+Lemma nat_to_bin_pres_incr : forall (n : nat),
+  nat_to_bin(S n) = incr (nat_to_bin n).
+Proof.
+  intros.
+  reflexivity.
+Qed.
+
+Theorem roundtrip_nat_bin_nat : forall n : nat,
+  bin_to_nat(nat_to_bin n) = n.
+Proof.
+  intros. induction n as [|n'].
+  - reflexivity.
+  - simpl. rewrite bin_to_nat_pres_incr.
+    rewrite IHn'. reflexivity.
+Qed.
+
+Lemma mult_2_plus : forall n : nat,
+  2 * n = n + n.
+Proof.
+  intros. simpl. rewrite plus_0_r. reflexivity.
+Qed.
+
+Theorem roundtrip_bin_nat_bin : forall bn : bin,
+    nat_to_bin(bin_to_nat bn) = bn.
+Proof.
+  intros. induction bn.
+  - reflexivity.
+  - simpl. rewrite plus_0_r. rewrite <- mult_2_plus.
+Abort.
+(* TODO *)
 
 (* ###################################################################### *)
 (** * Formal vs. Informal Proof (Advanced) *)
