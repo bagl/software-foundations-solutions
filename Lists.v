@@ -770,13 +770,26 @@ Proof.
 Theorem app_nil_end : forall l : natlist,
   l ++ [] = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l.
+  - reflexivity.
+  - simpl. rewrite -> IHl. reflexivity.
+Qed.
 
+Lemma rev_snoc_cons : forall (n : nat) (l : natlist),
+  rev (snoc l n) = cons n (rev l).
+Proof.
+  intros. induction l.
+  - reflexivity.
+  - simpl. rewrite IHl. reflexivity.
+Qed.
 
 Theorem rev_involutive : forall l : natlist,
   rev (rev l) = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l.
+  - reflexivity.
+  - simpl. rewrite rev_snoc_cons. rewrite IHl. reflexivity.
+Qed.
 
 (** There is a short solution to the next exercise.  If you find
     yourself getting tangled up, step back and try to look for a
@@ -785,26 +798,37 @@ Proof.
 Theorem app_assoc4 : forall l1 l2 l3 l4 : natlist,
   l1 ++ (l2 ++ (l3 ++ l4)) = ((l1 ++ l2) ++ l3) ++ l4.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. rewrite app_assoc. rewrite app_assoc. reflexivity.
+Qed.
 
 Theorem snoc_append : forall (l:natlist) (n:nat),
   snoc l n = l ++ [n].
 Proof.
-  (* FILL IN HERE *) Admitted.
-
+  intros. induction l.
+  - reflexivity.
+  - simpl. rewrite IHl. reflexivity.
+Qed.
 
 Theorem distr_rev : forall l1 l2 : natlist,
   rev (l1 ++ l2) = (rev l2) ++ (rev l1).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l1.
+  - simpl. rewrite app_nil_end. reflexivity.
+  - simpl. rewrite IHl1. rewrite snoc_append.
+    rewrite app_assoc. rewrite snoc_append. reflexivity.
+Qed.
 
 (** An exercise about your implementation of [nonzeros]: *)
 
 Lemma nonzeros_app : forall l1 l2 : natlist,
   nonzeros (l1 ++ l2) = (nonzeros l1) ++ (nonzeros l2).
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros. induction l1.
+  - reflexivity.
+  - simpl. rewrite IHl1. destruct n.
+    reflexivity.
+    reflexivity.
+Qed.
 
 (** **** Exercise: 2 stars (beq_natlist)  *)
 (** Fill in the definition of [beq_natlist], which compares
@@ -812,20 +836,27 @@ Proof.
     yields [true] for every list [l]. *)
 
 Fixpoint beq_natlist (l1 l2 : natlist) : bool :=
-  (* FILL IN HERE *) admit.
+  match l1, l2 with
+  | nil, nil => true
+  | a :: l1', b :: l2' => andb (beq_nat a b) (beq_natlist l1' l2')
+  | _, _ => false
+  end.
+
 
 Example test_beq_natlist1 :   (beq_natlist nil nil = true).
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_beq_natlist2 :   beq_natlist [1;2;3] [1;2;3] = true.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_beq_natlist3 :   beq_natlist [1;2;3] [1;2;4] = false.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Theorem beq_natlist_refl : forall l:natlist,
   true = beq_natlist l l.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros. induction l.
+  - reflexivity.
+  - simpl. rewrite <- IHl. rewrite <- beq_nat_refl. reflexivity.
+Qed.
 
 (* ###################################################### *)
 (** ** List Exercises, Part 2 *)
@@ -836,8 +867,13 @@ Proof.
        involving [cons] ([::]), [snoc], and [app] ([++]).
      - Prove it. *)
 
-(* FILL IN HERE *)
-(** [] *)
+Theorem cons_snoc_app : forall (n1 n2 : nat) (l1 l2 : natlist),
+  (snoc l1 n1) ++ (cons n2 l2) = l1 ++ [n1; n2] ++ l2.
+Proof.
+  intros. induction l1.
+  - simpl. reflexivity.
+  - simpl. rewrite IHl1. reflexivity.
+Qed.
 
 (** **** Exercise: 3 stars, advanced (bag_proofs)  *)
 (** Here are a couple of little theorems to prove about your
@@ -846,7 +882,8 @@ Proof.
 Theorem count_member_nonzero : forall (s : bag),
   ble_nat 1 (count 1 (1 :: s)) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. reflexivity.
+Qed.
 
 (** The following lemma about [ble_nat] might help you in the next proof. *)
 
@@ -862,15 +899,59 @@ Proof.
 Theorem remove_decreases_count: forall (s : bag),
   ble_nat (count 0 (remove_one 0 s)) (count 0 s) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros.
+  induction s.
+  - reflexivity.
+  - simpl. destruct n.
+    simpl. rewrite ble_n_Sn. reflexivity.
+    simpl. rewrite IHs. reflexivity.
+Qed.
 
 (** **** Exercise: 3 stars, optional (bag_count_sum)  *)
 (** Write down an interesting theorem [bag_count_sum] about bags
     involving the functions [count] and [sum], and prove it.*)
 
-(* FILL IN HERE *)
-(** [] *)
+Lemma count_empty : forall (n : nat),
+  count n [] = 0.
+Proof. reflexivity. Qed.
+
+Lemma sum_empty : forall (s : bag),
+  sum s [] = s.
+Proof.
+  intros. induction s.
+  - reflexivity.
+  - simpl. rewrite IHs. reflexivity.
+Qed.
+
+Lemma count_sum_empty : forall (n : nat) (s : bag),
+  count n (sum s []) = count n s.
+Proof.
+  intros. rewrite sum_empty. reflexivity.
+Qed.
+
+Lemma sum_cons : forall (n : nat) (s1 s2 : bag),
+  sum (n :: s1) s2 = n :: sum s1 s2.
+Proof. reflexivity. Qed.
+
+Lemma bag_count_cons_eq : forall (n : nat) (s : bag),
+  count n (n :: s) = S (count n s).
+Proof.
+  intros. simpl. rewrite <- beq_nat_refl. reflexivity.
+Qed.
+
+Lemma bag_count_cons : forall (n n0 : nat) (s : bag),
+  count n (n0 :: s) = count n [n0] + count n s.
+Proof.
+  intros.
+Abort.
+
+Theorem bag_count_sum : forall (n : nat) (b1 b2 : bag),
+  count n b1 + count n b2 = count n (sum b1 b2).
+Proof.
+  intros. induction b1.
+  - reflexivity.
+  - rewrite sum_cons.
+Abort.
 
 (** **** Exercise: 4 stars, advanced (rev_injective)  *)
 (** Prove that the [rev] function is injective, that is,
